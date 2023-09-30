@@ -1,0 +1,154 @@
+#!/usr/bin/php
+<?php
+// Functions to remove ANSI escape codes from a string
+
+function removeCtrlKeyEscapeCodes($input) {
+    // Regular expression pattern to match ANSI escape codes
+    $pattern = "/\^\[\[([0-9]{1,2}(;[0-9]{1,2})*)?[mGK]/";
+
+    // Use preg_replace to remove ANSI escape codes
+    $no_colors = preg_replace($pattern, '', $input);
+
+    $pattern = "/\^\[\[([0-9;]+)m|(\x1B\[\d+[A-Za-z])/";
+    $output = preg_replace($pattern, '', $no_colors);
+
+    $pattern = "/\^\[\[[0-9;]*[mGK]/"; // ANSI escape sequence pattern
+    $safe_output = preg_replace($pattern, '', $output);
+
+    $pattern = "/\^\[(?:[[][^A-Za-z]*[A-Za-z]|[=<>!](?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[()#;?]*[@-~])/";
+    $safer_output = preg_replace($pattern, '', $safe_output);
+    
+    $pattern = "/\^\[\[[0-9;]*[A-Za-z]/";
+    $out = preg_replace($pattern, '', $safer_output);
+
+    return $out;
+}
+
+function removeOctalEscapeCodes($input) {
+    $pattern = "/\033\[([0-9]{1,2}(;[0-9]{1,2})*)?[mGK]/";
+    $no_colors = preg_replace($pattern, '', $input);
+
+    $pattern = "/\033\[([0-9;]+)m|(\x1B\[\d+[A-Za-z])/";
+    $output = preg_replace($pattern, '', $no_colors);
+
+    $pattern = "/\033\[[0-9;]*[mGK]/";
+    $safe_output = preg_replace($pattern, '', $output);
+
+    $pattern = "/\033(?:[[][^A-Za-z]*[A-Za-z]|[=<>!](?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[()#;?]*[@-~])/";
+    $safer_output = preg_replace($pattern, '', $safe_output);
+    
+    $pattern = "/\033\[[0-9;]*[A-Za-z]/";
+    $out = preg_replace($pattern, '', $safer_output);
+
+    return $out;
+}
+
+function removeUnicodeEscapeCodes($input) {
+    $pattern = "/\\\\u001b\[([0-9]{1,2}(;[0-9]{1,2})*)?[mGK]/u";
+    $no_colors = preg_replace($pattern, '', $input);
+
+    $pattern = "/\\\\u001b\[([0-9;]+)m|(\x1B\[\d+[A-Za-z])/u";
+    $output = preg_replace($pattern, '', $no_colors);
+
+    $pattern = "/\\\\u001b\[[0-9;]*[mGK]/u";
+    $safe_output = preg_replace($pattern, '', $output);
+
+    $pattern = "/\\\\u001b(?:[[][^A-Za-z]*[A-Za-z]|[=<>!](?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[()#;?]*[@-~])/u";
+    $safer_output = preg_replace($pattern, '', $safe_output);
+    
+    $pattern = "/\\\\u001b\[[0-9;]*[A-Za-z]/u";
+    $out = preg_replace($pattern, '', $safer_output);
+
+    return $out;
+}
+
+function removeHexadecimalANSIEscapeCodes($input) {
+    $pattern = "/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?[mGK]/";
+    $no_colors = preg_replace($pattern, '', $input);
+
+    $pattern = "/\x1B\[([0-9;]+)m|(\x1B\[\d+[A-Za-z])/";
+/*
+In this pattern:
+\x1B matches the escape character (ASCII 27).
+\[ matches the literal '[' character.
+([0-9;]+) captures one or more digits or semicolons, which are common in color codes and formatting.
+m matches the 'm' character, which typically marks the end of an ANSI color or formatting code.
+(\x1B\[\d+[A-Za-z]) captures sequences for cursor control and other ANSI escape sequences that don't end with 'm'.
+*/
+    $output = preg_replace($pattern, '', $no_colors);
+
+    $pattern = "/\x1b\[[0-9;]*[mGK]/"; // ANSI escape sequence pattern
+    $safe_output = preg_replace($pattern, '', $output);
+
+    $pattern = "/\x1b(?:[[][^A-Za-z]*[A-Za-z]|[=<>!](?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[()#;?]*[@-~])/";
+    $safer_output = preg_replace($pattern, '', $safe_output);
+    
+    $pattern = "/\x1b\[[0-9;]*[A-Za-z]/";
+    $out = preg_replace($pattern, '', $safer_output);
+
+    return $out;
+}
+
+function removeDecimalANSIEscapeCodes($input) {
+    $pattern = "/\27\[([0-9]{1,2}(;[0-9]{1,2})*)?[mGK]/";
+    $no_colors = preg_replace($pattern, '', $input);
+
+    $pattern = "/\27\[([0-9;]+)m|(\x1B\[\d+[A-Za-z])/";
+    $output = preg_replace($pattern, '', $no_colors);
+
+    $pattern = "/\27\[[0-9;]*[mGK]/";
+    $safe_output = preg_replace($pattern, '', $output);
+
+    $pattern = "/\27(?:[[][^A-Za-z]*[A-Za-z]|[=<>!](?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[()#;?]*[@-~])/";
+    $safer_output = preg_replace($pattern, '', $safe_output);
+    
+    $pattern = "/\27\[[0-9;]*[A-Za-z]/";
+    $out = preg_replace($pattern, '', $safer_output);
+
+    return $out;
+}
+
+function removeC_ANSIEscapeCodes($input) {
+    $pattern = "/\\\e\[([0-9]{1,2}(;[0-9]{1,2})*)?[mGK]/";
+    $no_colors = preg_replace($pattern, '', $input);
+
+    $pattern = "/\\\e\[([0-9;]+)m|(\x1B\[\d+[A-Za-z])/";
+    $output = preg_replace($pattern, '', $no_colors);
+
+    $pattern = "/\\\e\[[0-9;]*[mGK]/";
+    $safe_output = preg_replace($pattern, '', $output);
+
+    $pattern = "/\\\e(?:[[][^A-Za-z]*[A-Za-z]|[=<>!](?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[()#;?]*[@-~])/";
+    $safer_output = preg_replace($pattern, '', $safe_output);
+    
+    $pattern = "/\\\e\[[0-9;]*[A-Za-z]/";
+    $out = preg_replace($pattern, '', $safer_output);
+
+    return $out;
+}
+
+function removeBell($input) {
+    $pattern = "/\7/";
+    $no_colors = preg_replace($pattern, '', $input);
+    $pattern = "/\007/";
+    $output = preg_replace($pattern, '', $no_colors);
+    $pattern = "/\x07/"; 
+    $safe_output = preg_replace($pattern, '', $output);
+    $pattern = "/\\\a/";
+    $safer_output = preg_replace($pattern, '', $safe_output);
+    $pattern = "/\^G/";
+    $out = preg_replace($pattern, '', $safer_output);
+    return $out;
+}
+
+// Read from standard input and remove ANSI escape codes
+while ($line = fgets(STDIN)) {
+    $cleanLine = removeCtrlKeyEscapeCodes($line);
+    $cleanLine = removeOctalEscapeCodes($cleanLine);
+    $cleanLine = removeUnicodeEscapeCodes($cleanLine);
+    $cleanLine = removeHexadecimalANSIEscapeCodes($cleanLine);
+    $cleanLine = removeDecimalANSIEscapeCodes($cleanLine);
+    $cleanLine = removeC_ANSIEscapeCodes($cleanLine);
+    $cleanLine = removeBell($cleanLine);
+    echo $cleanLine;
+}
